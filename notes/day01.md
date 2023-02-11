@@ -7,6 +7,8 @@
 * 排序
   * 递归
   * 分治
+* 滑动窗口
+
 ## 数组基础知识
 数组：数组是存放在**连续内存空间**上的**相同类型数据**的集合，可以方便地通过下标索引的方式获取到下标下对应的数据。
 但同时，因为数组的在内存空间的地址是连续的，所以我们在删除或者增添元素的时候，就难免要移动其他元素的地址。
@@ -64,3 +66,24 @@ class Solution {
 }
 ```
 
+### 双指针法
+27. 移除元素
+使用双指针解题
+```java
+class Solution {
+    public int removeElement(int[] nums, int val) {
+        int i = 0, j = 0;
+        int n = nums.length;
+        while (j < n){
+            if (nums[j] != val){
+                nums[i] = nums[j];
+                i++;
+                j++;
+            }else{
+                j++;
+            }
+        }
+        return i;
+    }
+}
+```
