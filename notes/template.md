@@ -13,3 +13,17 @@ class Solution {
     }
 }
 ```
+2. 字符串处理
+#### [151. 反转字符串中的单词](https://leetcode.cn/problems/reverse-words-in-a-string/description/)
+```java
+class Solution {
+    public String reverseWords(String s) {
+        // 除去开头和末尾的空白字符
+        s = s.trim();
+        // 正则匹配连续的空白字符作为分隔符分割
+        List<String> wordList = Arrays.asList(s.split("\\s+"));
+        Collections.reverse(wordList);
+        return String.join(" ", wordList);
+    }
+}
+```
