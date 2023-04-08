@@ -82,4 +82,178 @@ public static void main(String[] args) {
 ```
 
 ## 题目练习
+1. 数据结构基础
 ### [232. 用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/)
+基础知识。
+```java
+class MyQueue {
+    Stack<Integer> stack1;
+    Stack<Integer> stack2;
+
+    public MyQueue() {
+        this.stack1 = new Stack<Integer>();
+        this.stack2 = new Stack<Integer>();
+    }
+    
+    public void push(int x) {
+        while (!stack2.empty()) stack1.push(stack2.pop());
+        stack1.push(x);
+    }
+    
+    public int pop() {
+        while (!stack1.empty()) stack2.push(stack1.pop());
+        return stack2.pop();
+    }
+    
+    public int peek() {
+        while (!stack1.empty()) stack2.push(stack1.pop());
+        return stack2.peek();
+    }
+    
+    public boolean empty() {
+        return stack1.empty() && stack2.empty();
+    }
+}
+```
+
+### [225. 用队列实现栈](https://leetcode.cn/problems/implement-stack-using-queues/)
+```java
+class MyStack {
+    Queue<Integer> q1;
+    Queue<Integer> q2;
+
+    public MyStack() {
+        q1 = new LinkedList<>();
+        q2 = new LinkedList<>();
+    }
+    
+    public void push(int x) {
+        q1.add(x);
+    }
+    
+    public int pop() {
+        int tmp = q1.poll();
+        while (!q1.isEmpty()){
+            q2.add(tmp);
+            tmp = q1.poll();
+        }
+        while (!q2.isEmpty()) q1.add(q2.poll());
+        return tmp;
+    }
+    
+    public int top() {
+        int tmp = q1.poll();
+        while (!q1.isEmpty()){
+            q2.add(tmp);
+            tmp = q1.poll();
+        }
+        q2.add(tmp);
+        while (!q2.isEmpty()) q1.add(q2.poll());
+        return tmp;
+    }
+    
+    public boolean empty() {
+        return q1.isEmpty();
+    }
+}
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack obj = new MyStack();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.top();
+ * boolean param_4 = obj.empty();
+ */
+```
+2. 括号匹配
+### [20. 有效的括号](https://leetcode.cn/problems/valid-parentheses/)
+```java
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<Character>();
+        int n = s.length();
+        for (int i = 0; i<n; i++){
+            if (s.charAt(i) == '(')
+                stack.push(')');
+            else if (s.charAt(i) == '[')
+                stack.push(']');
+            else if (s.charAt(i) == '{')
+                stack.push('}');
+            else{
+                if (stack.empty() || stack.pop() != s.charAt(i))
+                    return false;
+            }
+        }
+        return stack.empty();
+    }
+}
+```
+[1047. 删除字符串中的所有相邻重复项](https://leetcode.cn/problems/remove-all-adjacent-duplicates-in-string/description/)
+限制了只删除相邻的2个重复项，就和括号匹配一样了。要注意Stack和String的使用。
+* 使用Stack的解法
+```java
+class Solution {
+    public String removeDuplicates(String s) {
+        Stack<Character> stack = new Stack<Character>();
+        int n = s.length();
+        for (int i = 0; i<n; i++){
+            if (stack.empty() || stack.peek() != s.charAt(i))
+                stack.push(s.charAt(i));
+            else{
+                stack.pop();
+            }
+        }
+        String res = "";
+        while (!stack.empty()){
+            res = stack.pop() + res;
+        }
+        return res;
+    }
+}
+```
+* 使用StringBuffer的写法，略快
+```java
+class Solution {
+    public String removeDuplicates(String s) {
+        StringBuffer sb = new StringBuffer();
+        int n = s.length();
+        for (int i = 0; i<n; i++){
+            int sbLen = sb.length();
+            if (sbLen == 0 || sb.charAt(sbLen-1) != s.charAt(i))
+                sb.append(s.charAt(i));
+            else{
+                sb.deleteCharAt(sbLen-1);
+            }
+        }
+        
+        return sb.toString();
+    }
+}
+```
+
+[150. 逆波兰表达式求值](https://leetcode.cn/problems/evaluate-reverse-polish-notation/)
+```java
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int n = tokens.length;
+        for (int i = 0; i<n; i++){
+            if (tokens[i].equals("+")){
+                stack.push(Integer.valueOf(stack.pop()) + Integer.valueOf(stack.pop()));
+            }else if (tokens[i].equals("-")){
+                stack.push(Integer.valueOf(stack.pop()) * (-1) + Integer.valueOf(stack.pop()));
+            }else if (tokens[i].equals("*")){
+                stack.push(Integer.valueOf(stack.pop()) * Integer.valueOf(stack.pop()));
+            }else if (tokens[i].equals("/")){
+                int tmp1 = stack.pop();
+                int tmp2 = stack.pop();
+                stack.push(tmp2 / tmp1);
+            }else{
+                stack.push(Integer.valueOf(tokens[i]));
+            }
+        }
+        return stack.peek();
+    }
+}
+```
