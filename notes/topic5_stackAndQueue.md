@@ -257,3 +257,103 @@ class Solution {
     }
 }
 ```
+3. 单调栈/单调队列
+### [239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/description/)
+用双端队列实现单调队列
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        MonotonicQueue queue = new MonotonicQueue();
+        int n = nums.length;
+        for (int i = 0; i<k; i++){
+            queue.push(nums[i]);
+        }
+        int[] res = new int[n-k+1];
+        for (int i = 0; i<n-k; i++){
+            res[i] = queue.peek();
+            queue.pop(nums[i]);
+            queue.push(nums[i+k]);
+        }
+        res[n-k] = queue.peek();
+        return res;
+    }
+}
+
+class MonotonicQueue{
+    Deque<Integer> deque = new LinkedList<Integer>();
+    void push(int i){
+        while (!deque.isEmpty() && deque.getLast() < i){
+            deque.removeLast();
+        }
+        deque.add(i);
+    }
+    void pop(int i){
+        if (deque.getLast() == i) deque.removeLast();
+    }
+    int peek(){
+        return deque.peek();
+    }
+}
+```
+[347. 前 K 个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/description/)
+使用Collection.sort()排序整个Entry，O(nlogn)
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        int n = nums.length;
+        for (int i = 0; i<n; i++){
+            if (map.containsKey(nums[i])){
+                map.put(nums[i], map.get(nums[i]) + 1);
+            }else{
+                map.put(nums[i], 1);
+            }
+        }
+        List<Map.Entry<Integer, Integer>> list = new LinkedList<Map.Entry<Integer, Integer>>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<Integer, Integer>>(){
+            public int compare(Map.Entry<Integer, Integer> entry1, Map.Entry<Integer, Integer> entry2){
+                return entry2.getValue() - entry1.getValue();
+            }
+        });
+        int[] res = new int[k];
+        int p = 0;
+        for (Map.Entry<Integer, Integer> entry: list){
+            res[p] = entry.getKey();
+            p++;
+            if (p >= k) break;
+        }
+        return res;
+    }
+}
+```
+按照题意使用heap解决，O(klogn)
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        int n = nums.length;
+        for (int i = 0; i<n; i++){
+            if (map.containsKey(nums[i])){
+                map.put(nums[i], map.get(nums[i]) + 1);
+            }else{
+                map.put(nums[i], 1);
+            }
+        }
+        PriorityQueue<int[]> heap = new PriorityQueue<>((pair1, pair2)->pair2[1]-pair1[1]);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()){
+            heap.add(new int[]{entry.getKey(),entry.getValue()});
+        }
+        int[] res = new int[k];
+        for (int i = 0; i<k; i++){
+            res[i] = heap.poll()[0];
+        }
+        return res;
+    }
+}
+```
+## 总结
+1. Java Collection的使用
+2. 数据结构基础
+3. 匹配问题（常用栈）
+4. 单调栈单调队列解决滑动窗口里的部分问题
+5. Heap数据结构
